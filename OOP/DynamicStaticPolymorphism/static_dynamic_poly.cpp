@@ -98,7 +98,26 @@ namespace StaticPolymorphism
         }
     };
 
-    template <typename TFormatter = UpperCaseFormatter>
+    class LowerCaseFormatter 
+    {
+    public:
+        std::string format(const std::string& data)
+        {
+            std::string transformed_data{data};
+
+            std::transform(data.begin(), data.end(), transformed_data.begin(), [](char c) { return std::tolower(c); });
+
+            return transformed_data;
+        }
+    };
+
+    template <typename F>
+    concept Formatter = requires(F fmt, const std::string& txt) {
+        fmt.format(txt);
+    };
+
+
+    template <Formatter TFormatter = UpperCaseFormatter>
     class Logger
     {
         TFormatter formatter_;
@@ -136,20 +155,22 @@ void static_polymorphism()
 {
     using namespace StaticPolymorphism;
 
-    Logger logger{UpperCaseFormatter{}};
+    Logger logger{UpperCaseFormatter{}}; // since C++17
     logger.log("Hello, World!");
 
     Logger<CapitalizeFormatter> logger2;
     logger2.log("hello, world!");
+
+    Logger<LowerCaseFormatter> logger3;
+    logger3.log("hello WORLD!");
 }
 
 class Container : std::vector<int>
 {
-    using BaseImpl = std::vector<int>;
+    using BaseImpl = std::vector<int>; // typedef
 public:
-    using BaseImpl::BaseImpl;
+    using BaseImpl::BaseImpl; // since C++11 - constructor inheritance
       
-
     size_t size() const
     {
         return BaseImpl::size();
@@ -183,7 +204,7 @@ int main()
 
     std::cout << "\n\n";
 
-    Container container = {1, 2, 3};
+    Container container(10, 665);
     container.add_item(10);
     container.add_item(20);
     container.remove_item(2);

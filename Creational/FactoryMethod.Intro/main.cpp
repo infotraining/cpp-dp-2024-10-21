@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cassert>
 
 namespace StronglyCoupled
 {
@@ -37,12 +38,14 @@ namespace StronglyCoupled
     };
 }
 
+using namespace ModernFactoryMethod;
+
 class MusicApp
 {
-    std::shared_ptr<MusicServiceCreator> music_service_creator_;
+    MusicServiceCreator music_service_creator_;
 
 public:
-    MusicApp(std::shared_ptr<MusicServiceCreator> music_service_creator)
+    MusicApp(MusicServiceCreator music_service_creator)
         : music_service_creator_(music_service_creator)
     {
     }
@@ -50,7 +53,7 @@ public:
     void play(const std::string& track_title)
     {
         // creation of the object
-        std::unique_ptr<MusicService> music_service = music_service_creator_->create_music_service();
+        std::unique_ptr<MusicService> music_service = music_service_creator_();
 
         // usage of the object
         std::optional<Track> track = music_service->get_track(track_title);
@@ -69,17 +72,56 @@ public:
     }
 };
 
+void foo(int arg)
+{
+    std::cout << "foo(" << arg << ")\n";
+}
+
+struct Foo
+{
+    int counter = 0;
+
+    void operator()(int arg)
+    {
+        ++counter;
+        std::cout << "Foo::operator()(" << arg << ")\n";
+    }
+};
+
+void std_function_demo()
+{    
+    void (*ptr_fun)(int) = foo;
+    ptr_fun(42);
+
+    Foo foonctor;
+    foonctor(42);
+    foonctor(42);
+    assert(foonctor.counter == 2);
+
+    //////////////////////////////////
+
+    std::function<void(int)> f;
+    f = foo;
+    f(42);
+
+    f = Foo{};
+    f(665);
+
+    f = [](int arg) { std::cout << "Lambda: " << arg << "\n"; };
+    f(123);
+}
+
 // parametrized factory
-using MusicServiceFactory = std::unordered_map<std::string, std::shared_ptr<MusicServiceCreator>>;
+using MusicServiceFactory = std::unordered_map<std::string, MusicServiceCreator>;
 
 int main()
 {
     MusicServiceFactory music_service_factory;
-    music_service_factory.emplace("Tidal", std::make_shared<TidalServiceCreator>("tidal_user", "KJH8324d&df"));
-    music_service_factory.emplace("Spotify", std::make_shared<SpotifyServiceCreator>("spotify_user", "rjdaslf276%2", 45));
-    music_service_factory.emplace("Filesystem", std::make_shared<FsMusicServiceCreator>());
+    music_service_factory.emplace("Tidal", TidalServiceCreator("tidal_user", "KJH8324d&df"));
+    music_service_factory.emplace("Spotify", SpotifyServiceCreator("spotify_user", "rjdaslf276%2", 45));
+    music_service_factory.emplace("Filesystem", []() { return std::make_unique<FilesystemMusicService>("/"); });
 
-    std::string id_from_config = "Tidal";
+    std::string id_from_config = "Spotify";
     MusicApp app(music_service_factory.at(id_from_config));
     app.play("Would?");
 }

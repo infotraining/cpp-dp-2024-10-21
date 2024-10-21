@@ -6,6 +6,8 @@
 #include <variant>
 #include <vector>
 
+using namespace std::literals;
+
 namespace InheritanceOfImplementation
 {
     class Set : std::set<int>
@@ -43,14 +45,14 @@ namespace InheritanceOfInterface
     class Formatter
     {
     public:
-        virtual std::string format(const std::string& data) = 0;
-        virtual ~Formatter() = default;
+        virtual std::string format(const std::string& data) const = 0;
+        virtual ~Formatter() {}
     };
 
     class UpperCaseFormatter : public Formatter
     {
-    public:
-        std::string format(const std::string& data) override
+    public:                
+        std::string format(const std::string& data) const override
         {
             std::string transformed_data{data};
 
@@ -63,7 +65,7 @@ namespace InheritanceOfInterface
     class LowerCaseFormatter : public Formatter
     {
     public:
-        virtual std::string format(const std::string& data) override
+        std::string format(const std::string& data) const override
         {
             std::string transformed_data{data};
 
@@ -76,7 +78,7 @@ namespace InheritanceOfInterface
     class CapitalizeFormatter : public Formatter
     {
     public:
-        virtual std::string format(const std::string& data) override
+        std::string format(const std::string& data) const override
         {
             std::string transformed_data{data};
 
@@ -147,4 +149,17 @@ int main()
     std::cout << "\n\n";
 
     inheritance_of_implementation();
+
+    std::cout << "\n------\n";
+    
+    InheritanceOfInterface::Formatter* ptr_fmt;
+
+    InheritanceOfInterface::UpperCaseFormatter fmt;
+
+    ptr_fmt = &fmt;
+
+    auto result = ptr_fmt->format("text");
+
+    std::cout << result << "\n";
+
 }

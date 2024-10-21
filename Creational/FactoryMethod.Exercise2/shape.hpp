@@ -10,7 +10,7 @@ namespace Drawing
     class Shape
     {
     public:
-        virtual ~Shape() = default;
+        virtual ~Shape() {}
         virtual void move(int dx, int dy) = 0;
         virtual void draw() const = 0;
     };
