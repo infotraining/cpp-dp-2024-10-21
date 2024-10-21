@@ -64,7 +64,6 @@ using ShapeFactory = Factory<Shape>;
 //         return make_unique<Rectangle>();
 //     else if (id == Square::id)
 //         return make_unique<Square>();
-
 //     throw runtime_error("Unknown shape id");
 // }
 
@@ -76,7 +75,6 @@ using ShapeRWFactory = Factory<ShapeReaderWriter, std::type_index>;
 //         return make_unique<RectangleReaderWriter>();
 //     else if (typeid(shape) == typeid(Square))
 //         return make_unique<SquareReaderWriter>();
-
 //     throw runtime_error("Unknown shape id");
 // }
 
@@ -151,16 +149,16 @@ public:
 int main()
 {
     ShapeFactory shape_factory;
-    shape_factory.register_creator(Rectangle::id, []
-        { return std::make_unique<Rectangle>(); });
-    shape_factory.register_creator(Square::id, []
-        { return std::make_unique<Square>(); });
+    shape_factory.register_creator(Rectangle::id, 
+        [] { return std::make_unique<Rectangle>(); });
+    shape_factory.register_creator(Square::id, 
+        [] { return std::make_unique<Square>(); });
 
     ShapeRWFactory shape_rw_factory;
-    shape_rw_factory.register_creator(std::type_index(typeid(Rectangle)), []
-        { return std::make_unique<RectangleReaderWriter>(); });
-    shape_rw_factory.register_creator(std::type_index(typeid(Square)), []
-        { return std::make_unique<SquareReaderWriter>(); });
+    shape_rw_factory.register_creator(std::type_index(typeid(Rectangle)), 
+        [] { return std::make_unique<RectangleReaderWriter>(); });
+    shape_rw_factory.register_creator(std::type_index(typeid(Square)), 
+        [] { return std::make_unique<SquareReaderWriter>(); });
 
     cout << "Start..." << endl;
 
