@@ -114,6 +114,38 @@ void std_function_demo()
 // parametrized factory
 using MusicServiceFactory = std::unordered_map<std::string, MusicServiceCreator>;
 
+struct MyContainer
+{
+    int* data_;
+    size_t size_;
+
+    using iterator = int*;
+    using const_iterator = const int*;
+
+    MyContainer(std::initializer_list<int> lst) : data_{new int[lst.size()]}, size_{lst.size()}
+    {
+        std::copy(lst.begin(), lst.end(), data_);
+    }
+
+    ~MyContainer() 
+    {
+        delete[] data_;
+    }
+
+    MyContainer(const MyContainer&) = delete;
+    MyContainer& operator=(const MyContainer&) = delete;
+
+    iterator begin()
+    {
+        return data_;
+    }
+
+    iterator end() 
+    {
+        return data_ + size_;
+    }
+};
+
 int main()
 {
     MusicServiceFactory music_service_factory;
@@ -124,4 +156,16 @@ int main()
     std::string id_from_config = "Spotify";
     MusicApp app(music_service_factory.at(id_from_config));
     app.play("Would?");
+
+    MyContainer vec = {1, 2, 3};
+    for(const auto& item : vec)
+    {
+        std::cout << item << "\n";
+    }
+    
+    for(auto it = vec.begin(); it != vec.end(); ++it)
+    {
+        std::cout << *it << "\n";
+    }
 }
+
