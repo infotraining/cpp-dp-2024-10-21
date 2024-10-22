@@ -1,6 +1,8 @@
 #include "text.hpp"
+#include "shape_factories.hpp"
 
 namespace
 {
-    // TODO - register creator for a Text class
+    bool is_registered = Drawing::SingletonShapeFactory::instance()
+            .register_creator(Drawing::Text::id, [] { return std::make_unique<Drawing::Text>(); });
 }

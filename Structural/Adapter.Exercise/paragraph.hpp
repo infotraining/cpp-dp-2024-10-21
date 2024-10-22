@@ -7,7 +7,6 @@
 
 namespace LegacyCode
 {
-
     class Paragraph
     {
         char* buffer_;

@@ -2,6 +2,7 @@
 #define COFFEEHELL_HPP_
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 class Coffee
@@ -20,7 +21,9 @@ class CoffeeBase : public Coffee
     std::string description_;
 
 public:
-    CoffeeBase(float price, const std::string& description) : price_{price}, description_{description}
+    CoffeeBase(float price, const std::string& description)
+        : price_{price}
+        , description_{description}
     {
     }
 
@@ -77,8 +80,91 @@ public:
     }
 };
 
+class CoffeeAddition : public CoffeeBase
+{
+protected:
+    std::shared_ptr<Coffee> coffee_;
+
+public:
+    CoffeeAddition(std::shared_ptr<Coffee> coffee, float price, const std::string& description)
+        : CoffeeBase(price, description)
+        , coffee_(coffee)
+    {
+    }
+
+    void set_coffe(std::shared_ptr<Coffee> coffee)
+    {
+        coffee_ = coffee;
+    }
+
+    void prepare() override
+    {
+        coffee_->prepare();
+    }
+
+    float get_total_price() const override
+    {
+        return coffee_->get_total_price() + CoffeeBase::get_total_price();
+    }
+
+    std::string get_description() const
+    {
+        return coffee_->get_description() + " + " + CoffeeBase::get_description();
+    }
+};
+
+class Whipped : public CoffeeAddition
+{
+    // float extra_price_ = 2.5;
+    // std::string extra_description_ = " with whipped cream";
+
+public:
+    Whipped(std::shared_ptr<Coffee> coffee, float price = 2.5, std::string description = "Whipped Cream")
+        : CoffeeAddition(coffee, price, std::move(description))
+    {
+    }
+
+    void prepare() override
+    {
+        coffee_->prepare();
+        std::cout << "Adding whipped cream.\n";
+    }    
+};
+
+class Whisky : public CoffeeAddition
+{    
+public:
+    Whisky(std::shared_ptr<Coffee> coffee, float price = 6.0, std::string description = "Whisky")
+        : CoffeeAddition(coffee, price, std::move(description))
+    {
+    }
+
+    void prepare() override
+    {
+        coffee_->prepare();
+        std::cout << "Adding some of the good (Irish) stuff.\n";
+    }
+};
+
+class ExtraEspresso : public CoffeeAddition
+{
+    float extra_price_ = 4;
+    std::string extra_description_ = " with extra espresso";
+
+public:
+    ExtraEspresso(std::shared_ptr<Coffee> coffee, float price = 6.0, std::string description = "Whisky")
+        : CoffeeAddition(coffee, price, std::move(description))
+    {
+    }
+
+    void prepare() override
+    {
+        coffee_->prepare();
+        std::cout << "Adding extra espresso.\n";
+    }
+};
 // TO DO: Condiments: Whipped: 2.5$, Whisky: 6.0$, ExtraEspresso: 4.0$
 
-// TO DO: Add CoffeeDecorator and concrete decorators for condiments 
+// TO DO: Add CoffeeDecorator and concrete decorators for condiments
 
 #endif /*COFFEEHELL_HPP_*/
