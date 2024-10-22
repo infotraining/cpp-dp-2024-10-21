@@ -9,12 +9,12 @@
 class AbstractProductA;
 class AbstractProductB;
 
-class AbstractFactory
+class WidgetFactory
 {
 public:
     virtual std::unique_ptr<AbstractProductA> create_product_A() = 0;
     virtual std::unique_ptr<AbstractProductB> create_product_B() = 0;
-    virtual ~AbstractFactory() = default;
+    virtual ~WidgetFactory() = default;
 };
 
 class AbstractProductA
@@ -80,7 +80,7 @@ public:
     }
 };
 
-class ConcreteFactory1 : public AbstractFactory
+class ConcreteFactory1 : public WidgetFactory
 {
 public:
     std::unique_ptr<AbstractProductA> create_product_A() override
@@ -94,7 +94,7 @@ public:
     }
 };
 
-class ConcreteFactory2 : public AbstractFactory
+class ConcreteFactory2 : public WidgetFactory
 {
 public:
     std::unique_ptr<AbstractProductA> create_product_A() override
@@ -115,7 +115,7 @@ private:
     std::unique_ptr<AbstractProductB> productB_;
 
 public:
-    Client(AbstractFactory& factory)
+    Client(WidgetFactory& factory)
         : productA_(factory.create_product_A())
         , productB_(factory.create_product_B())
     {
