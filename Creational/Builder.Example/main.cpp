@@ -11,8 +11,7 @@ HtmlDocument build_html_document()
 {
     HtmlReportBuilder html_builder;
 
-    DataParser parser(html_builder);
-    parser.Parse(file_name);
+    html_builder.parse(file_name);
 
     return html_builder.get_report();
 }
@@ -21,8 +20,7 @@ CsvDocument build_csv_document()
 {
     CsvReportBuilder csv_builder;
 
-    DataParser parser(csv_builder);
-    parser.Parse(file_name);
+    csv_builder.parse(file_name);
 
     return csv_builder.get_report();
 }
@@ -40,4 +38,19 @@ int main()
 
     for (const auto& line : csv_doc)
         cout << line << endl;
+
+    cout << "///////////////////////////////////////////////////////////\n";
+
+    HtmlReportBuilder html_builder;
+
+    html_builder
+        .add_header("TITLE")
+            .begin_data()
+                .add_row({"1", "2", "3"})
+                .add_row({"four", "five", "six"})
+            .end_data()
+        .add_footer("THE END");
+
+    std::cout << html_builder.get_report() << "\n";
+
 }

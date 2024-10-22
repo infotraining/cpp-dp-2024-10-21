@@ -8,43 +8,43 @@
 #include <string>
 #include <iterator>
 
-class DataParser
-{
-public:
-    explicit DataParser(ReportBuilder& report_builder)
-        : report_builder_(report_builder)
-    {
-    }
+// class DataParser
+// {
+// public:
+//     explicit DataParser(ReportBuilder& report_builder)
+//         : report_builder_(report_builder)
+//     {
+//     }
 
-    virtual void Parse(const std::string& file_name)
-    {
-        report_builder_.add_header(std::string("Raport from file: ") + file_name);
+//     virtual void parse(const std::string& file_name)
+//     {
+//         report_builder_.add_header(std::string("Raport from file: ") + file_name);
 
-        report_builder_.begin_data();
+//         report_builder_.begin_data();
 
-        std::ifstream fin(file_name.c_str());
+//         std::ifstream fin(file_name.c_str());
 
-        while (!fin.eof())
-        {
-            std::string row;
-            std::getline(fin, row);
+//         while (!fin.eof())
+//         {
+//             std::string row;
+//             std::getline(fin, row);
 
-            std::istringstream iss(row);
-            DataRow data(std::istream_iterator<std::string>{iss},
-                std::istream_iterator<std::string>());
+//             std::istringstream iss(row);
+//             DataRow data(std::istream_iterator<std::string>{iss},
+//                 std::istream_iterator<std::string>());
 
-            report_builder_.add_row(data);
-        }
+//             report_builder_.add_row(data);
+//         }
 
-        report_builder_.end_data();
+//         report_builder_.end_data();
 
-        report_builder_.add_footer("Copyright RaportBuilder 2013");
-    }
+//         report_builder_.add_footer("Copyright RaportBuilder 2013");
+//     }
 
-    virtual ~DataParser() = default;
+//     virtual ~DataParser() = default;
 
-public:
-    ReportBuilder& report_builder_;
-};
+// public:
+//     ReportBuilder& report_builder_;
+// };
 
 #endif

@@ -27,7 +27,7 @@ namespace Drawing
             return std::make_unique<TShape>(static_cast<const TShape&>(*this));
         }
     };
-
+    
     class ShapeBase : public Shape
     {
         Point coord_; // composition
