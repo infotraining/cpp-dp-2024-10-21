@@ -1,3 +1,4 @@
+
 #include <cassert>
 #include <fstream>
 #include <functional>
@@ -28,6 +29,14 @@ public:
     {
     }
 
+    GraphicsDoc(const GraphicsDoc& other) : shape_factory_(other.shape_factory_), shape_rw_factory_(other.shape_rw_factory_)
+    {
+        for (auto& shape : other.shapes_)
+        {
+            shapes_.push_back(shape->clone());
+        }
+    }
+    
     void add(unique_ptr<Shape> shp)
     {
         shapes_.push_back(std::move(shp));
@@ -92,8 +101,7 @@ int main()
 
     doc.render();
 
-    // TODO: Uncomment this code
-    // GraphicsDoc doc2 = doc;
+    GraphicsDoc doc2 = doc;
 
-    // doc2.save("new_drawing.txt");
+    doc2.save("new_drawing.txt");
 }

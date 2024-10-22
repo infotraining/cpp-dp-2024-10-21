@@ -5,10 +5,10 @@
 
 namespace Drawing
 {
-    class Circle : public ShapeBase
+    class Circle : public CloneableShape<Circle, ShapeBase>
     {
         int radius_;
-
+        using BaseType = CloneableShape<Circle, ShapeBase>;
     public:
         static constexpr const char* id = "Circle";
 

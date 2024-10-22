@@ -11,7 +11,7 @@ namespace
 }
 
 Circle::Circle(int x, int y, int r)
-    : ShapeBase{x, y}
+    : BaseType{x, y}
     , radius_{r}
 {
 }
