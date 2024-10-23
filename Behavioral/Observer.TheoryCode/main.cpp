@@ -36,7 +36,7 @@ public:
     void update(TemperatureMonitor& tm, double current_temperature) override
     {
         if (!is_on_ && current_temperature > 25.0)
-            on();
+            on();            
 
         if (is_on_ && current_temperature < 24.0)
             off();
@@ -64,7 +64,7 @@ public:
         std::cout << "ConsoleLogger notified - temperature has changed to " << current_temperature << std::endl;
     }
 
-    void update(Fan& tm, const std::string& message) override
+    void update(Fan& f, const std::string& message) override
     {
         std::cout << "ConsoleLogger notified - " << message << std::endl;
     }
