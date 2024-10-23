@@ -17,7 +17,7 @@ Bitmap::Bitmap(size_t size, char fill_char) : pimpl_{std::make_unique<Impl>(size
     fill_n(pimpl_->image_.begin(), pimpl_->image_.size(), fill_char);
 }
 
-Bitmap::~Bitmap()
+Bitmap::~Bitmap() 
 {    
 }
 

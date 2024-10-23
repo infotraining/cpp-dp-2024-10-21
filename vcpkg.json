@@ -2,6 +2,6 @@
   "dependencies": [
     "bext-di",
     "catch2",
-    "gtest"
+    "gtest",    
   ]
 }
