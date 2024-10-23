@@ -3,7 +3,7 @@
 using namespace std;
 
 int main()
-{
+{    
     // Create a tree structure
     shared_ptr<Composite> root = make_shared<Composite>("root");
 
