@@ -2,11 +2,11 @@
 #define STRATEGY_HPP_
 
 #include <algorithm>
+#include <cctype>
 #include <cstring>
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <cctype>
 #include <string>
 
 // "Strategy"
@@ -25,7 +25,8 @@ public:
     {
         std::string transformed_data{data};
 
-        std::transform(data.begin(), data.end(), transformed_data.begin(), [](char c) { return std::toupper(c); });
+        std::transform(data.begin(), data.end(), transformed_data.begin(), [](char c)
+            { return std::toupper(c); });
 
         return transformed_data;
     }
@@ -39,7 +40,8 @@ public:
     {
         std::string transformed_data{data};
 
-        std::transform(data.begin(), data.end(), transformed_data.begin(), [](char c) { return std::tolower(c); });
+        std::transform(data.begin(), data.end(), transformed_data.begin(), [](char c)
+            { return std::tolower(c); });
 
         return transformed_data;
     }
@@ -57,7 +59,8 @@ public:
         {
             transformed_data[0] = static_cast<char>(std::toupper(data.front()));
 
-            std::transform(data.begin() + 1, data.end(), transformed_data.begin() + 1, [](char c) { return std::tolower(c); });
+            std::transform(data.begin() + 1, data.end(), transformed_data.begin() + 1, [](char c)
+                { return std::tolower(c); });
         }
 
         return transformed_data;
@@ -71,7 +74,8 @@ class DataContext
     std::string data_ = "text";
 
 public:
-    DataContext(std::shared_ptr<Formatter> strategy) : strategy_{strategy}
+    DataContext(std::shared_ptr<Formatter> strategy)
+        : strategy_{strategy}
     {
     }
 
@@ -95,5 +99,71 @@ public:
         data_ = data;
     }
 };
+
+namespace ModernCpp
+{
+    using Formatter = std::function<std::string(const std::string&)>;
+
+    class UpperCaseFormatter
+    {
+    public:
+        std::string operator()(const std::string& data)
+        {
+            std::string transformed_data{data};
+
+            std::transform(data.begin(), data.end(), transformed_data.begin(), [](char c)
+                { return std::toupper(c); });
+
+            return transformed_data;
+        }
+    };
+
+    // "ConcreteStrategyB"
+    class LowerCaseFormatter
+    {
+    public:
+        std::string operator()(const std::string& data)
+        {
+            std::string transformed_data{data};
+
+            std::transform(data.begin(), data.end(), transformed_data.begin(), [](char c)
+                { return std::tolower(c); });
+
+            return transformed_data;
+        }
+    };
+
+    class DataContext
+    {
+        Formatter format_;
+        std::string data_ = "text";
+
+    public:
+        DataContext(Formatter strategy)
+            : format_{strategy}
+        {
+        }
+
+        void reset_formatter(Formatter new_format)
+        {
+            format_ = new_format;
+        }
+
+        void pretty_print()
+        {
+            std::cout << "Data: " << format_(data_) << std::endl;
+        }
+
+        std::string data() const
+        {
+            return data_;
+        }
+
+        void set_data(const std::string& data)
+        {
+            data_ = data;
+        }
+    };
+}
 
 #endif /*STRATEGY_HPP_*/
