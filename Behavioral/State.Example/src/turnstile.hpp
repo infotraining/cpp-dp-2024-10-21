@@ -87,11 +87,17 @@ namespace Before
 
 namespace After
 {
+    struct Context
+    {
+        size_t lock_counter{};
+        size_t unlock_counter{};
+    };
+
     class ITurnstileState
     {
     public:
-        virtual const ITurnstileState* coin(TurnstileAPI& api) const = 0;
-        virtual const ITurnstileState* pass(TurnstileAPI& api) const = 0;
+        virtual const ITurnstileState* coin(TurnstileAPI& api, Context& ctx) const = 0;
+        virtual const ITurnstileState* pass(TurnstileAPI& api, Context& ctx) const = 0;
         virtual TurnstileState state() const = 0;
         virtual ~ITurnstileState()
         {
@@ -105,13 +111,14 @@ namespace After
     {
         // TurnstileState interface
     public:
-        const ITurnstileState* coin(TurnstileAPI& api) const override
+        const ITurnstileState* coin(TurnstileAPI& api, Context& ctx) const override
         {
             api.unlock();
+            ++ctx.unlock_counter;
             return ITurnstileState::unlocked_state;
         }
 
-        const ITurnstileState* pass(TurnstileAPI& api) const override
+        const ITurnstileState* pass(TurnstileAPI& api, Context& ctx) const override
         {
             api.alarm();
 
@@ -128,15 +135,16 @@ namespace After
     {
         // TurnstileState interface
     public:
-        const ITurnstileState* coin(TurnstileAPI& api) const override
+        const ITurnstileState* coin(TurnstileAPI& api, Context& ctx) const override
         {
             api.display("Thank you...");
             return this;
         }
 
-        const ITurnstileState* pass(TurnstileAPI& api) const override
+        const ITurnstileState* pass(TurnstileAPI& api, Context& ctx) const override
         {
             api.lock();
+            ++ctx.lock_counter;
             return ITurnstileState::locked_state;
         }
 
@@ -148,6 +156,7 @@ namespace After
 
     class Turnstile
     {
+        Context context_;
         const ITurnstileState* state_;
         TurnstileAPI& api_;
 
@@ -165,12 +174,12 @@ namespace After
 
         void coin()
         {
-            state_ = state_->coin(api_);
+            state_ = state_->coin(api_, context_);
         }
 
         void pass()
         {
-            state_ = state_->pass(api_);
+            state_ = state_->pass(api_, context_);
         }
     };
 }
