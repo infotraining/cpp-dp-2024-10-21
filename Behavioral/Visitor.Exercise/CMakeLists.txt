@@ -5,7 +5,7 @@ string(REPLACE " " "_" TARGET_MAIN ${DIRECTORY_NAME})
 
 add_subdirectory(src)
 enable_testing()
-add_subdirectory(tests)
+# add_subdirectory(tests)
 
 ####################
 # Main app

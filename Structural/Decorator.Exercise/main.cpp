@@ -1,6 +1,7 @@
 #include "starbugs_coffee.hpp"
-#include <memory>
+
 #include <cassert>
+#include <memory>
 
 void client(std::unique_ptr<Coffee> coffee)
 {
@@ -9,66 +10,44 @@ void client(std::unique_ptr<Coffee> coffee)
 }
 
 inline namespace VariadicTemplates
+{
+    class CoffeeBuilder
     {
-        template <typename HeadDecorator, typename... TailDecorators>
-        struct DecorateWith
+        std::unique_ptr<Coffee> coffee_;
+
+    public:
+        template <typename BaseCoffee>
+        CoffeeBuilder& create_base()
         {
-            static std::unique_ptr<Coffee> make_decorator(std::unique_ptr<Coffee> component)
-            {
-                auto decorator_component = std::make_unique<HeadDecorator>(move(component));
+            coffee_.reset(new BaseCoffee);
 
-                return DecorateWith<TailDecorators...>::make_decorator(move(decorator_component));
-            }
-        };
+            return *this;
+        }
 
-        template <typename HeadDecorator>
-        struct DecorateWith<HeadDecorator>
+        template <typename... Condiments>
+        CoffeeBuilder& add()
         {
-            static std::unique_ptr<Coffee> make_decorator(std::unique_ptr<Coffee> component)
-            {
-                return std::make_unique<HeadDecorator>(move(component));
-            }
-        };
+            assert(coffee_);
 
-        class CoffeeBuilder
+            (..., (coffee_ = std::make_unique<Condiments>(std::move(coffee_))));
+
+            return *this;
+        }
+
+        std::unique_ptr<Coffee> get_coffee()
         {
-            std::unique_ptr<Coffee> coffee_;
-
-        public:
-            template <typename BaseCoffee>
-            CoffeeBuilder& create_base()
-            {
-                coffee_.reset(new BaseCoffee);
-
-                return *this;
-            }
-
-            template <typename... Condiments>
-            CoffeeBuilder& add()
-            {
-                assert(coffee_);
-
-                coffee_ = DecorateWith<Condiments...>::make_decorator(move(coffee_));
-
-                return *this;
-            }
-
-            std::unique_ptr<Coffee> get_coffee()
-            {
-                return std::move(coffee_);
-            }
-        };
-    }
-
+            return std::move(coffee_);
+        }
+    };
+}
 
 int main()
 {
-    std::unique_ptr<Coffee> cf = 
-        std::make_unique<Whipped>(
+    std::unique_ptr<Coffee> cf = std::make_unique<Whipped>(
+        std::make_unique<Whisky>(
             std::make_unique<Whisky>(
                 std::make_unique<Whisky>(
-                    std::make_unique<Whisky>(
-                        std::make_unique<Espresso>()))));
+                    std::make_unique<Espresso>()))));
     client(std::move(cf));
 
     std::cout << "\n\n";

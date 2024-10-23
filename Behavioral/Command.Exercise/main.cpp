@@ -1,26 +1,24 @@
-#include <iostream>
-
 #include "application.hpp"
 #include "command.hpp"
-#include <boost/di.hpp>
+
+#include <iostream>
 
 using namespace std;
-namespace di = boost::di;
 
 int main()
 {
-    const auto injector = di::make_injector(
-        di::bind<Console>().to<Terminal>(),
-        di::bind<Clipboard>().to<SharedClipboard>());
+    Document doc;
+    Terminal terminal;
+    SharedClipboard shared_clipboard;
+    CommandHistory cmd_history;
 
-    auto app = injector.create<Application>();
-
-    app.add_command("Print"s, injector.create<std::shared_ptr<PrintCmd>>());
-    app.add_command("ToUpper"s, injector.create<std::shared_ptr<ToUpperCmd>>());
-    app.add_command("Clear"s, injector.create<std::shared_ptr<ClearCmd>>());
-    app.add_command("AddText"s, injector.create<std::shared_ptr<AddTextCmd>>());
-    app.add_command("Paste"s, injector.create<std::shared_ptr<PasteCmd>>());
-    app.add_command("Undo"s, injector.create<std::shared_ptr<UndoCmd>>());
+    Application app(terminal);
+    app.add_command("Print"s, std::make_shared<PrintCmd>(doc, terminal));
+    app.add_command("ToUpper"s, std::make_shared<ToUpperCmd>(doc, cmd_history));
+    app.add_command("Clear"s, std::make_shared<ClearCmd>(doc, cmd_history));
+    app.add_command("AddText"s, std::make_shared<AddTextCmd>(doc, terminal, cmd_history));
+    app.add_command("Paste"s, std::make_shared<PasteCmd>(doc, shared_clipboard, cmd_history));
+    app.add_command("Undo"s, std::make_shared<UndoCmd>(terminal, cmd_history));
 
     // TODO - register two commands: CopyCmd & ToLowerCmd
 
