@@ -30,14 +30,14 @@ using Results = std::vector<StatResult>;
 //     sum
 // };
 
-class Algorithm
+class Statistics
 {
 public:
     virtual Results calculate(Data& data) = 0;
-    virtual ~Algorithm() = default;
+    virtual ~Statistics() = default;
 };
 
-class AvgAlgorithm : public Algorithm
+class Avg : public Statistics
 {
     Results calculate(Data& data) override
     {    
@@ -48,7 +48,7 @@ class AvgAlgorithm : public Algorithm
     }
 };
 
-class MinMaxAlgorithm : public Algorithm
+class MinMax : public Statistics
 {
     Results calculate(Data& data) override
     {
@@ -62,7 +62,7 @@ class MinMaxAlgorithm : public Algorithm
     }
 };
 
-class SumAlgorithm : public Algorithm
+class Sum : public Statistics
 {
     Results calculate(Data& data) override
     {
@@ -74,11 +74,11 @@ class SumAlgorithm : public Algorithm
     }
 };
 
-class CompositeAlgorithm : public Algorithm
+class CompositeAlgorithm : public Statistics
 {
-    std::vector<std::shared_ptr<Algorithm>> stats_;
+    std::vector<std::shared_ptr<Statistics>> stats_;
 public:
-    void add_statistics(std::shared_ptr<Algorithm> stat)
+    void add_statistics(std::shared_ptr<Statistics> stat)
     {
         stats_.push_back(stat);
     }
@@ -99,12 +99,12 @@ public:
 
 class DataAnalyzer
 {    
-    std::shared_ptr<Algorithm> algorithm_;
+    std::shared_ptr<Statistics> algorithm_;
     Data data_;
     Results results_;
 
 public:
-    DataAnalyzer(std::shared_ptr<Algorithm> stat)
+    DataAnalyzer(std::shared_ptr<Statistics> stat)
         : algorithm_{stat}
     {        
     }
@@ -127,7 +127,7 @@ public:
         std::cout << "File " << file_name << " has been loaded...\n";
     }
 
-    void set_statistics(std::shared_ptr<Algorithm> stat)
+    void set_statistics(std::shared_ptr<Statistics> stat)
     {
         algorithm_ = stat;
     }
@@ -152,9 +152,9 @@ void show_results(const Results& results)
 
 int main()
 {
-    auto avg = std::make_shared<AvgAlgorithm>();
-    auto min_max = std::make_shared<MinMaxAlgorithm>();
-    auto sum = std::make_shared<SumAlgorithm>();
+    auto avg = std::make_shared<Avg>();
+    auto min_max = std::make_shared<MinMax>();
+    auto sum = std::make_shared<Sum>();
 
     auto std_stats = std::make_shared<CompositeAlgorithm>();
     std_stats->add_statistics(avg);
